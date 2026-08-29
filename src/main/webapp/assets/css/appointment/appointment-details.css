@@ -1,0 +1,193 @@
+/* ================================
+   GLOBAL
+================================ */
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    width: 100%;
+    min-height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+}
+
+body {
+    background: #f5f7fb;
+    font-family: "Segoe UI", Arial, sans-serif;
+}
+
+/* ================================
+   PAGE
+================================ */
+
+.page-container {
+    width: 100%;
+    max-width: 100%;
+    min-height: 100vh;
+    padding: 25px;
+    overflow-x: hidden;
+}
+
+/* ================================
+   CARD
+================================ */
+
+.page-container > .card {
+    width: 100%;
+    max-width: 100%;
+    border: none;
+    border-radius: 14px;
+    overflow: hidden;
+}
+
+/* ================================
+   CONTENT
+================================ */
+
+.page-container .p-4 {
+    width: 100%;
+    max-width: 100%;
+    padding: 22px !important;
+}
+
+/* ================================
+   TABLE WRAPPER
+================================ */
+
+.appointment-table-wrapper {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
+/* Prevent table from pushing body */
+
+#appointmentTable {
+    width: 100% !important;
+    max-width: 100%;
+}
+
+/* ================================
+   DATATABLE
+================================ */
+
+#appointmentTable_wrapper {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+#appointmentTable_wrapper .dt-layout-row {
+    width: 100%;
+    max-width: 100%;
+}
+
+/* ================================
+   HEADER
+================================ */
+
+.card-header-custom {
+    width: 100%;
+    max-width: 100%;
+    padding: 20px 25px;
+    background: #0d6efd;
+    color: white;
+}
+
+.card-header-custom > .d-flex {
+    width: 100%;
+    max-width: 100%;
+}
+
+/* ================================
+   MOBILE
+================================ */
+
+@media (max-width: 768px) {
+
+    .page-container {
+        padding: 10px;
+    }
+
+    .page-container .p-4 {
+        padding: 15px !important;
+    }
+
+    .card-header-custom {
+        padding: 15px;
+    }
+
+    .card-header-custom > .d-flex {
+        flex-direction: column;
+        align-items: flex-start !important;
+    }
+
+    .card-header-custom .d-flex.gap-2 {
+        width: 100%;
+    }
+
+    .card-header-custom .btn {
+        font-size: 12px;
+    }
+
+    /*
+       Allow only the table wrapper
+       to scroll horizontally.
+    */
+
+    .appointment-table-wrapper {
+        overflow-x: auto;
+        overflow-y: hidden;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    #appointmentTable {
+        min-width: 950px !important;
+        width: 950px !important;
+    }
+
+    /*
+       Keep DataTables controls inside screen
+    */
+
+    #appointmentTable_wrapper {
+        overflow-x: hidden;
+    }
+
+    #appointmentTable_wrapper .dt-search {
+        width: 100%;
+    }
+
+    #appointmentTable_wrapper .dt-search input {
+        max-width: 180px;
+    }
+}
+
+/* ================================
+   SMALL MOBILE
+================================ */
+
+@media (max-width: 480px) {
+
+    .page-container {
+        padding: 5px;
+    }
+
+    .page-container .p-4 {
+        padding: 10px !important;
+    }
+
+    .card-header-custom {
+        padding: 12px;
+    }
+
+    #appointmentTable {
+        min-width: 900px !important;
+        width: 900px !important;
+    }
+}

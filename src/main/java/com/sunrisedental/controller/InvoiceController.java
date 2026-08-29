@@ -6,25 +6,18 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.List;
-
-import com.google.gson.Gson;
-import com.sunrisedental.dao.PatientDao;
-import com.sunrisedental.dao.impl.PatientDaoImpl;
-import com.sunrisedental.dto.PatientDto;
 
 /**
- * Servlet implementation class PatientSearchController
+ * Servlet implementation class InvoiceController
  */
-@WebServlet("/PatientSearchController")
-public class PatientSearchController extends HttpServlet {
+@WebServlet("/InvoiceController")
+public class InvoiceController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-    PatientDao patientDao = new PatientDaoImpl();
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public PatientSearchController() {
+    public InvoiceController() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -33,22 +26,8 @@ public class PatientSearchController extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-	   String search = request.getParameter("search");
-
-        if (search == null) {
-            search = "";
-        }
-        
-        search = search.trim();
-
-        List<PatientDto> patients = patientDao.searchPatient(search);
-        
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
-        
-        Gson gson = new Gson();
-        
-        response.getWriter().write(gson.toJson(patients));
+		// TODO Auto-generated method stub
+		response.getWriter().append("Served at: ").append(request.getContextPath());
 	}
 
 	/**
