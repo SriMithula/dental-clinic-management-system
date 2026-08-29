@@ -8,8 +8,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 
 import com.sunrisedental.dealer.AppointmentDealer;
 import com.sunrisedental.dto.CommonResponse;
@@ -37,6 +35,47 @@ public class AppointmentController extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
+		
+		String action = request.getParameter("action");
+			
+		if (action != null && action.equalsIgnoreCase("FINALIZE")) {
+
+	        String idParam = request.getParameter("id");
+	
+	        if (idParam == null || idParam.isEmpty()) {
+	            response.sendRedirect(request.getContextPath()+ "/appointment");
+	            return;
+	        }
+
+            try {
+
+                int appointmentId = Integer.parseInt(idParam);
+
+                CommonResponse cr = appointmentService.finalizeAppointment(appointmentId);
+
+                if (cr.status) {
+                    response.sendRedirect(
+                            request.getContextPath()
+                                    + "/generateBill?"
+                                    + "&appointmentId="
+                                    + appointmentId
+                    );
+
+                } else {
+                    request.setAttribute("error",cr.error);
+                }
+
+            } catch (NumberFormatException e) {
+
+                request.setAttribute(
+                        "error",
+                        "Invalid appointment ID."
+                );
+            }
+
+            return;
+	    }
 
 	    request.setAttribute("dentists",appointmentService.getDentists());
 	    request.setAttribute("treatments",appointmentService.getTreatments());
@@ -63,8 +102,10 @@ public class AppointmentController extends HttpServlet {
         }
 		
 		if (action.equals(Action.CREATE.toString())) {
-			AppointmentDealer dealer = new AppointmentDealer();
-			dealer.fillViaReq(request);
+			AppointmentDealer dealer = new AppointmentDealer.Builder()
+                    .fillViaReq(request)
+                    .build();
+			
 			CommonResponse cr =  this.appointmentService.saveAppointment(dealer, userId);
 			
 			if(cr.status) {

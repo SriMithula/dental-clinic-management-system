@@ -1,0 +1,54 @@
+@charset "UTF-8";
+body {
+    background: #f5f7fb;
+    font-family: Arial, sans-serif;
+}
+
+.bill-container {
+    max-width: 850px;
+    margin: 40px auto;
+}
+
+.bill {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    padding: 35px;
+}
+
+.clinic-header {
+    text-align: center;
+    border-bottom: 2px solid #0d6efd;
+    padding-bottom: 20px;
+    margin-bottom: 25px;
+}
+
+.clinic-header h2 {
+    color: #0d6efd;
+    margin-bottom: 5px;
+}
+
+.total-row {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+/* Print Specific Styles */
+@media print {
+    body {
+        background: white;
+    }
+
+    .no-print {
+        display: none !important;
+    }
+
+    .bill-container {
+        margin: 0;
+        max-width: 100%;
+    }
+
+    .bill {
+        box-shadow: none;
+    }
+}

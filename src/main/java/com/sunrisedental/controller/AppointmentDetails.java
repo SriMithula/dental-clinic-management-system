@@ -6,49 +6,43 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
-import com.google.gson.Gson;
-import com.sunrisedental.dao.PatientDao;
-import com.sunrisedental.dao.impl.PatientDaoImpl;
-import com.sunrisedental.dto.PatientDto;
+import com.sunrisedental.dto.AppointmentDto;
+import com.sunrisedental.dto.CommonResponse;
+import com.sunrisedental.service.AppointmentService;
 
 /**
- * Servlet implementation class PatientSearchController
+ * Servlet implementation class AppointmentDetails
  */
-@WebServlet("/PatientSearchController")
-public class PatientSearchController extends HttpServlet {
+@WebServlet("/appointmentDetails")
+public class AppointmentDetails extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-    PatientDao patientDao = new PatientDaoImpl();
-       
+    private AppointmentService appointmentService ;
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public PatientSearchController() {
+    public AppointmentDetails() {
         super();
-        // TODO Auto-generated constructor stub
+        appointmentService = new AppointmentService();
     }
 
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-	   String search = request.getParameter("search");
+		List<AppointmentDto> appointments = new ArrayList<AppointmentDto>();
+		
+		CommonResponse cr = appointmentService.getAppointments();
+		if(cr.status) {
+			appointments = (List<AppointmentDto>) cr.extra;
+		}
 
-        if (search == null) {
-            search = "";
-        }
-        
-        search = search.trim();
+		request.setAttribute("appointments", appointments);
 
-        List<PatientDto> patients = patientDao.searchPatient(search);
-        
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
-        
-        Gson gson = new Gson();
-        
-        response.getWriter().write(gson.toJson(patients));
+	    request.getRequestDispatcher("/appointment-details.jsp")
+	        .forward(request, response);
 	}
 
 	/**
