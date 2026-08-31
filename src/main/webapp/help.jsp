@@ -189,113 +189,102 @@
 
     <!-- Appointment -->
 
-    <div class="card p-4">
+   
 
-        <h5 class="mb-4">
-            <i class="bi bi-calendar-plus text-primary"></i>
-            2. Register an Appointment
-        </h5>
-
-        <div class="step">
-
-            <div class="step-number">
-                1
-            </div>
-
-            <div class="step-content">
-
-                <h6>Open Appointments</h6>
-
-                <p class="text-muted mb-0">
-                    Select <strong>Appointments</strong> from the
-                    dashboard menu.
-                </p>
-
-            </div>
-
-        </div>
-
-
-        <div class="step">
-
-            <div class="step-number">
-                2
-            </div>
-
-            <div class="step-content">
-
-                <h6>Enter Patient Information</h6>
-
-                <p class="text-muted mb-0">
-                    Enter the appointment number, patient name,
-                    address and contact number.
-                </p>
-
-            </div>
-
-        </div>
-
-
-        <div class="step">
-
-            <div class="step-number">
-                3
-            </div>
-
-            <div class="step-content">
-
-                <h6>Select Dentist and Treatment</h6>
-
-                <p class="text-muted mb-0">
-                    Select the appropriate dentist and treatment
-                    type from the available options.
-                </p>
-
-            </div>
-
-        </div>
-
-
-        <div class="step">
-
-            <div class="step-number">
-                4
-            </div>
-
-            <div class="step-content">
-
-                <h6>Select Date and Time</h6>
-
-                <p class="text-muted mb-0">
-                    Select the patient's appointment date and time.
-                </p>
-
-            </div>
-
-        </div>
-
-
-        <div class="step mb-0">
-
-            <div class="step-number">
-                5
-            </div>
-
-            <div class="step-content">
-
-                <h6>Save Appointment</h6>
-
-                <p class="text-muted mb-0">
-                    Click <strong>Save Appointment</strong> to
-                    store the appointment.
-                </p>
-
-            </div>
-
-        </div>
-
-    </div>
-
+				<div class="card p-4">
+		
+		    <h5 class="mb-4">
+		        <i class="bi bi-calendar-plus text-primary"></i>
+		        2. Register an Appointment
+		    </h5>
+		
+		    <div class="step">
+		        <div class="step-number">
+		            1
+		        </div>
+		
+		        <div class="step-content">
+		            <h6>Open Appointments</h6>
+		
+		            <p class="text-muted mb-0">
+		                Select <strong>Appointments</strong> from the navigation menu.
+		            </p>
+		        </div>
+		    </div>
+		
+		    <div class="step">
+		        <div class="step-number">
+		            2
+		        </div>
+		
+		        <div class="step-content">
+		            <h6>Search for the Patient</h6>
+		
+		            <p class="text-muted mb-0">
+		                Search for the patient using the patient name in the search field.
+		            </p>
+		        </div>
+		    </div>
+		
+		    <div class="step">
+		        <div class="step-number">
+		            3
+		        </div>
+		
+		        <div class="step-content">
+		            <h6>Select an Existing Patient</h6>
+		
+		            <p class="text-muted mb-0">
+		                If the patient already exists, select the matching patient.
+		                The patient name, contact number and address will be filled automatically.
+		            </p>
+		        </div>
+		    </div>
+		
+		    <div class="step">
+		        <div class="step-number">
+		            4
+		        </div>
+		
+		        <div class="step-content">
+		            <h6>Register a New Patient</h6>
+		
+		            <p class="text-muted mb-0">
+		                If the patient is not found, enter the patient name,
+		                contact number and address manually.
+		            </p>
+		        </div>
+		    </div>
+		
+		    <div class="step">
+		        <div class="step-number">
+		            5
+		        </div>
+		
+		        <div class="step-content">
+		            <h6>Enter Appointment Details</h6>
+		
+		            <p class="text-muted mb-0">
+		                Enter the dentist, treatment, appointment date and time.
+		            </p>
+		        </div>
+		    </div>
+		
+		    <div class="step mb-0">
+		        <div class="step-number">
+		            6
+		        </div>
+		
+		        <div class="step-content">
+		            <h6>Save Appointment</h6>
+		
+		            <p class="text-muted mb-0">
+		                Click <strong>Save Appointment</strong> to store the appointment.
+		            </p>
+		        </div>
+		    </div>
+		
+		</div>
 
     <!-- Search Appointment -->
 
@@ -535,8 +524,8 @@
 
     <div class="text-center">
 
-        <a href="dashboard.jsp"
-           class="btn btn-primary">
+        <a href="${pageContext.request.contextPath}/dashboard"
+   			class="btn btn-primary">
 
             <i class="bi bi-arrow-left"></i>
             Back to Dashboard

@@ -3,6 +3,8 @@ package com.sunrisedental.dealer;
 import java.sql.Date;
 import java.sql.Time;
 
+import com.google.gson.JsonObject;
+
 import jakarta.servlet.http.HttpServletRequest;
 
 public class AppointmentDealer {
@@ -139,6 +141,41 @@ public class AppointmentDealer {
             return this; 
         }
 
+        public Builder fillViaJson(JsonObject json) {
+            this.patientName = getStringOrNull(json, "patientName");
+            this.contactNo = getStringOrNull(json, "contactNo");
+            this.address = getStringOrNull(json, "address");
+            this.appointmentNo = getStringOrNull(json, "appointmentNo");
+
+            String date = getStringOrNull(json, "appointmentDate");
+            String time = getStringOrNull(json, "appointmentTime");
+
+            if (date != null && !date.isEmpty()) {
+                this.appointmentDate = Date.valueOf(date);
+            }
+            if (time != null && !time.isEmpty()) {
+                this.appointmentTime = Time.valueOf(time + ":00");
+            }
+
+            if (json.has("patientId") && !json.get("patientId").isJsonNull()) {
+                this.patientId = json.get("patientId").getAsInt();
+            }
+            if (json.has("dentistId") && !json.get("dentistId").isJsonNull()) {
+                this.dentistId = json.get("dentistId").getAsInt();
+            }
+            if (json.has("treatmentId") && !json.get("treatmentId").isJsonNull()) {
+                this.treatmentId = json.get("treatmentId").getAsInt();
+            }
+
+            return this;
+        }
+
+        private static String getStringOrNull(JsonObject json, String key) {
+            return (json.has(key) && !json.get(key).isJsonNull())
+                    ? json.get(key).getAsString()
+                    : null;
+        }
+        
         public AppointmentDealer build() {
             return new AppointmentDealer(this);
         }

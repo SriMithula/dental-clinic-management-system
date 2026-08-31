@@ -532,7 +532,7 @@
                         href="<%= request.getContextPath() %>/dashboard"
                         class="btn btn-outline-dark">
 
-                        Cancel
+                        Close
 
                     </a>
 

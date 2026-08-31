@@ -67,6 +67,15 @@ public class AppointmentService {
 	            return cr;
 	        }
 			if (dealer.getPatientId() == -1) {
+				
+				 if (patientDao.isPatientNameExists(dealer.getPatientName())) {
+				        connection.rollback();
+				        cr.status = false;
+				        cr.error = "A patient with this name already exists. Please search for the patient above and select them instead of registering as new.";
+
+				        return cr;
+				    }
+
 
                 int newPatientId = patientDao.createPatient(
                         dealer.getPatientName(),

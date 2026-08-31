@@ -87,7 +87,10 @@
             <button type="button" onclick="window.print()" class="btn btn-success">
                 <i class="bi bi-printer"></i> Print Bill
             </button>
-            <a href="dashboard.jsp" class="btn btn-secondary">Back</a>
+            <a href="<%= request.getContextPath() %>/dashboard"
+   				class="btn btn-secondary">
+   				 Back
+				</a>
         </div>
     </div>
 </div>

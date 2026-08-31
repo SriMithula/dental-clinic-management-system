@@ -46,16 +46,21 @@
         <i class="bi bi-search"></i>
         Appointment Details
     </a>
+    
+    <a href="<%= request.getContextPath() %>/patients.jsp">
+    	<i class="bi bi-people"></i>
+    	Patient Details
+	</a>
 
     <a href="<%= request.getContextPath() %>/bill">
         <i class="bi bi-receipt"></i>
         Billing
     </a>
 
-    <a href="<%= request.getContextPath() %>/help">
-        <i class="bi bi-question-circle"></i>
-        Help
-    </a>
+    <a href="<%= request.getContextPath() %>/help.jsp">
+    	<i class="bi bi-question-circle"></i>
+    	Help
+	</a>
 
  
 	<a href="<%= request.getContextPath() %>/logout">
@@ -97,7 +102,9 @@
 
         <div class="col-md-3">
 
-            <div class="card p-3">
+            <div class="card p-3"
+     onclick="window.location.href='<%= request.getContextPath() %>/appointmentDetails';"
+     style="cursor: pointer;">
 
                 <div class="d-flex justify-content-between">
 
@@ -122,7 +129,9 @@
 
         <div class="col-md-3">
 
-            <div class="card p-3">
+            <div class="card p-3"
+     onclick="window.location.href='<%= request.getContextPath() %>/patients.jsp';"
+     style="cursor: pointer;">
 
                 <div class="d-flex justify-content-between">
 
@@ -208,7 +217,7 @@
 
         <div class="row g-3">
 
-            <div class="col-md-4">
+           <div class="col-md-6">
 
                 <a href="<%= request.getContextPath() %>/appointment"
                    class="btn btn-primary w-100 py-3">
@@ -220,7 +229,7 @@
 
             </div>
 
-            <div class="col-md-4">
+            <div class="col-md-6">
 
                 <a href="<%= request.getContextPath() %>/appointmentDetails"
                    class="btn btn-outline-primary w-100 py-3">
@@ -231,19 +240,7 @@
                 </a>
 
             </div>
-
-            <div class="col-md-4">
-
-                <a href="<%= request.getContextPath() %>/help"
-                   class="btn btn-success w-100 py-3">
-
-                    <i class="bi bi-receipt"></i>
-                    Create Bill
-
-                </a>
-
-            </div>
-
+            
         </div>
 
     </div>

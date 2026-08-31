@@ -96,4 +96,36 @@ public class PatientDaoImpl implements PatientDao {
 
         return -1;
     }
+	
+	@Override
+    public boolean isPatientNameExists(String name) {
+
+        String sql = """
+                SELECT COUNT(*)
+                FROM patients
+                WHERE LOWER(name) = LOWER(?)
+                  AND status = 1
+                """;
+
+        try {
+
+        	Connection connection = DatabaseConnectionManager.getInstance().getConnection();
+        	PreparedStatement ps = connection.prepareStatement(sql);
+
+            ps.setString(1, name.trim());
+
+            try (ResultSet rs = ps.executeQuery()) {
+
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Failed to validate patient name", e);
+        }
+
+        return false;
+    }
 }
