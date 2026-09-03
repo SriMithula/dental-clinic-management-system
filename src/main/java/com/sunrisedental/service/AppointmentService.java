@@ -1,6 +1,8 @@
 package com.sunrisedental.service;
 
 import java.sql.Connection;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 import com.sunrisedental.dao.AppointmentDao;
@@ -20,6 +22,7 @@ import com.sunrisedental.dto.DentistDto;
 import com.sunrisedental.dto.TreatmentDto;
 import com.sunrisedental.util.DBConnection;
 import com.sunrisedental.util.DatabaseConnectionManager;
+import com.sunrisedental.validation.AppointmentDateTimeValidator;
 
 public class AppointmentService {
 	private AppointmentDao appointmentDao;
@@ -50,6 +53,23 @@ public class AppointmentService {
 		try {
 			connection = DBConnection.getConnection();
 			connection.setAutoCommit(false);
+			LocalDate localAppointmentDate = dealer.getAppointmentDate() != null
+					? dealer.getAppointmentDate().toLocalDate()
+					: null;
+			LocalTime localAppointmentTime = dealer.getAppointmentTime() != null
+					? dealer.getAppointmentTime().toLocalTime()
+					: null;
+
+			String dateTimeError = new AppointmentDateTimeValidator()
+					.validate(localAppointmentDate, localAppointmentTime);
+
+			if (dateTimeError != null) {
+				connection.rollback();
+	            cr.status = false;
+	            cr.error = dateTimeError;
+
+	            return cr;
+	        }
 			
 			if (appointmentDao.isAppointmentNoExists(dealer.getAppointmentNo())) {
 				connection.rollback();
@@ -68,13 +88,13 @@ public class AppointmentService {
 	        }
 			if (dealer.getPatientId() == -1) {
 				
-				 if (patientDao.isPatientNameExists(dealer.getPatientName())) {
-				        connection.rollback();
-				        cr.status = false;
-				        cr.error = "A patient with this name already exists. Please search for the patient above and select them instead of registering as new.";
+				if (patientDao.isDuplicatePatient(dealer.getPatientName(), dealer.getContactNo())) {
+			        connection.rollback();
+			        cr.status = false;
+			        cr.error = "A patient with the same name and contact number already exists. Please search for the patient above and select them instead of registering as new.";
 
-				        return cr;
-				    }
+			        return cr;
+			    }
 
 
                 int newPatientId = patientDao.createPatient(
@@ -198,6 +218,15 @@ public class AppointmentService {
 	              return cr;
             }
             
+            if (invoiceDao.getInvoiceByAppointmentId(appointmentId) != null) {
+                connection.rollback();
+
+                cr.status = false;
+                cr.error = "This appointment has already been billed.";
+
+                return cr;
+            }
+            
             invoiceDao.createInvoice(appointmentId, appointment.getTreatmentCost(), appointment.getConsultation_fee());
 
             connection.commit();
@@ -246,4 +275,137 @@ public class AppointmentService {
 
         return cr;
     }	
+	public CommonResponse getAppointmentById(int appointmentId) {
+
+        CommonResponse cr = new CommonResponse();
+
+        try {
+
+            Connection connection = DatabaseConnectionManager.getInstance().getConnection();
+
+            AppointmentDto appointment = appointmentDao.findById(appointmentId, connection);
+
+            if (appointment == null) {
+                cr.status = false;
+                cr.error = "Appointment not found.";
+                return cr;
+            }
+
+            cr.status = true;
+            cr.extra = appointment;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            cr.status = false;
+            cr.error = "Failed to load appointment.";
+        }
+
+        return cr;
+    }
+
+    public CommonResponse updateAppointment(AppointmentDealer dealer) {
+
+        CommonResponse cr = new CommonResponse();
+
+        try {
+
+            Connection connection = DatabaseConnectionManager.getInstance().getConnection();
+
+            AppointmentDto existing = appointmentDao.findById(dealer.getId(), connection);
+
+            if (existing == null) {
+                cr.status = false;
+                cr.error = "Appointment not found.";
+                return cr;
+            }
+
+            if (existing.isFinalized()) {
+                cr.status = false;
+                cr.error = "This appointment has already been billed and can no longer be edited.";
+                return cr;
+            }
+
+            LocalDate localAppointmentDate = dealer.getAppointmentDate() != null
+                    ? dealer.getAppointmentDate().toLocalDate()
+                    : null;
+            LocalTime localAppointmentTime = dealer.getAppointmentTime() != null
+                    ? dealer.getAppointmentTime().toLocalTime()
+                    : null;
+
+            String dateTimeError = new AppointmentDateTimeValidator()
+                    .validate(localAppointmentDate, localAppointmentTime);
+
+            if (dateTimeError != null) {
+                cr.status = false;
+                cr.error = dateTimeError;
+                return cr;
+            }
+
+            if (appointmentDao.isAppointmentNoExistsExcludingSelf(dealer.getAppointmentNo(), dealer.getId())) {
+                cr.status = false;
+                cr.error = "Appointment number already exists.";
+                return cr;
+            }
+
+            if (appointmentDao.isAppointmentExistsExcludingSelf(dealer, dealer.getId())) {
+                cr.status = false;
+                cr.error = "This dentist already has an appointment at this date and time.";
+                return cr;
+            }
+
+            appointmentDao.updateAppointment(dealer);
+
+            cr.status = true;
+            cr.extra = "Appointment updated successfully.";
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            cr.status = false;
+            cr.error = "Failed to update appointment.";
+        }
+
+        return cr;
+    }
+
+    public CommonResponse deleteAppointment(int appointmentId) {
+
+        CommonResponse cr = new CommonResponse();
+
+        try {
+
+            Connection connection = DatabaseConnectionManager.getInstance().getConnection();
+
+            AppointmentDto existing = appointmentDao.findById(appointmentId, connection);
+
+            if (existing == null) {
+                cr.status = false;
+                cr.error = "Appointment not found.";
+                return cr;
+            }
+
+            if (existing.isFinalized()) {
+                cr.status = false;
+                cr.error = "This appointment has already been billed and can no longer be deleted.";
+                return cr;
+            }
+
+            boolean deleted = appointmentDao.deleteAppointment(appointmentId);
+
+            if (!deleted) {
+                cr.status = false;
+                cr.error = "Failed to delete appointment.";
+                return cr;
+            }
+
+            cr.status = true;
+            cr.extra = "Appointment deleted successfully.";
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            cr.status = false;
+            cr.error = "Failed to delete appointment.";
+        }
+
+        return cr;
+    }
 }

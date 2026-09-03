@@ -36,6 +36,7 @@ public class DashboardDaoImpl implements DashboardDao {
         String revenueSql = """
                 SELECT COALESCE(SUM(total_amount), 0)
                 FROM invoice
+                WHERE status = 1
                 """;
 
         try  {

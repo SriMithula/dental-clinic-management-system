@@ -13,5 +13,9 @@ public interface AppointmentDao {
     List<AppointmentDto> getAppointments();
     boolean finalizeAppointment(int appointmentId, Connection connection);
     AppointmentDto findById(int appointmentId, Connection connection);
+    boolean isAppointmentNoExistsExcludingSelf(String appointmentNo, int excludeAppointmentId);
+    boolean isAppointmentExistsExcludingSelf(AppointmentDealer dealer, int excludeAppointmentId);
+    void updateAppointment(AppointmentDealer dealer);
+    boolean deleteAppointment(int appointmentId);
     
 }

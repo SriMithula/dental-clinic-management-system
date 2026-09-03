@@ -1,5 +1,6 @@
 <%@ page import="com.sunrisedental.dto.TreatmentDto" %>
 <%@ page import="com.sunrisedental.dto.DentistDto" %>
+<%@ page import="com.sunrisedental.dto.AppointmentDto" %>
 <%@ page import="java.util.List" %>
 
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
@@ -22,6 +23,17 @@
     // Success comes from redirect URL: ?success=true
     String success = request.getParameter("success");
 
+    // Edit mode: set by AppointmentController when opening an existing
+    // appointment (action=EDIT), and also true when this page is
+    // re-shown after a failed EDIT submission (the hidden "action"
+    // field comes back as "EDIT" on that forward).
+    AppointmentDto editAppointment =
+        (AppointmentDto) request.getAttribute("editAppointment");
+
+    boolean isEditMode =
+        editAppointment != null
+        || "EDIT".equalsIgnoreCase(request.getParameter("action"));
+
     // Preserve submitted values when there is an error
     String patientId = request.getParameter("patientId");
     String patientName = request.getParameter("patientName");
@@ -32,6 +44,25 @@
     String treatmentId = request.getParameter("treatmentId");
     String appointmentDate = request.getParameter("appointmentDate");
     String appointmentTime = request.getParameter("appointmentTime");
+    String appointmentId = request.getParameter("appointmentId");
+
+    // First time opening the edit form (fresh GET): pre-fill from the
+    // existing appointment. On a redisplay after a validation error,
+    // the fields above are already populated from the resubmitted form,
+    // so this only fills in what's still missing.
+    if (editAppointment != null) {
+
+        if (patientId == null) patientId = String.valueOf(editAppointment.getPatientId());
+        if (patientName == null) patientName = editAppointment.getPatientName();
+        if (contactNo == null) contactNo = editAppointment.getContactNo();
+        if (address == null) address = editAppointment.getAddress();
+        if (appointmentNo == null) appointmentNo = editAppointment.getAppointmentNo();
+        if (dentistId == null) dentistId = String.valueOf(editAppointment.getDentistId());
+        if (treatmentId == null) treatmentId = String.valueOf(editAppointment.getTreatmentId());
+        if (appointmentDate == null) appointmentDate = editAppointment.getAppointmentDate().toString();
+        if (appointmentTime == null) appointmentTime = editAppointment.getAppointmentTime().toString().substring(0, 5);
+        if (appointmentId == null) appointmentId = String.valueOf(editAppointment.getId());
+    }
 
     // Avoid null values
     patientId = patientId != null ? patientId : "";
@@ -43,6 +74,7 @@
     treatmentId = treatmentId != null ? treatmentId : "";
     appointmentDate = appointmentDate != null ? appointmentDate : "";
     appointmentTime = appointmentTime != null ? appointmentTime : "";
+    appointmentId = appointmentId != null ? appointmentId : "";
 %>
 
 <!DOCTYPE html>
@@ -72,7 +104,7 @@
 
                     <h4>
                         <i class="bi bi-calendar-plus"></i>
-                        Register Appointment
+                        <%= isEditMode ? "Edit Appointment" : "Register Appointment" %>
                     </h4>
 
                     <small>
@@ -100,9 +132,13 @@
             id="appointmentForm" novalidate>
 
 
-            <input type="hidden"
+           <input type="hidden"
                    name="action"
-                   value="CREATE">
+                   value="<%= isEditMode ? "EDIT" : "CREATE" %>">
+
+            <input type="hidden"
+                   name="appointmentId"
+                   value="<%= appointmentId %>">
 
 
             <% if ("true".equals(success)) { %>
@@ -136,7 +172,8 @@
                     Patient Information
 
                 </div>
-
+                
+                <% if (!isEditMode) { %>
 
 
                 <div class="patient-search-box mb-4">
@@ -235,6 +272,20 @@
                     </button>
 
                 </div>
+                
+                <% } %>
+
+                <% if (isEditMode) { %>
+
+                <div class="alert alert-secondary mb-4">
+                    <i class="bi bi-lock"></i>
+                    Patient details are locked while editing an
+                    appointment &mdash; delete this appointment and
+                    create a new one if it belongs to a different
+                    patient.
+                </div>
+
+                <% } %>
 
 
                 <input
@@ -266,6 +317,7 @@
                             class="form-control"
                             placeholder="Enter patient name"
                             value="<%= patientName %>"
+                            <%= isEditMode ? "readonly" : "" %>
                             >
 
                     </div>
@@ -290,6 +342,7 @@
                             class="form-control"
                             placeholder="07XXXXXXXX"
                             value="<%= contactNo %>"
+                            <%= isEditMode ? "readonly" : "" %>
                             >
 
                         <small class="text-muted">
@@ -318,6 +371,7 @@
                             id="address"
                             class="form-control"
                             placeholder="Enter patient address"
+                            <%= isEditMode ? "readonly" : "" %>
                             ><%= address %></textarea>
 
                     </div>
@@ -517,7 +571,7 @@
                     <button
                         type="reset"
                         class="btn btn-secondary"
-                        onclick="clearPatient()">
+                        <%= isEditMode ? "" : "onclick=\"clearPatient()\"" %>>
 
                         <i class="bi bi-arrow-counterclockwise"></i>
 
@@ -529,7 +583,9 @@
                     <!-- Cancel -->
 
                     <a
-                        href="<%= request.getContextPath() %>/dashboard"
+                        href="<%= isEditMode
+                                    ? request.getContextPath() + "/appointmentDetails"
+                                    : request.getContextPath() + "/dashboard" %>"
                         class="btn btn-outline-dark">
 
                         Close
@@ -537,15 +593,13 @@
                     </a>
 
 
-                    <!-- Save -->
-
                     <button
                         type="submit"
                         class="btn btn-primary">
 
                         <i class="bi bi-save"></i>
 
-                        Save Appointment
+                        <%= isEditMode ? "Update Appointment" : "Save Appointment" %>
 
                     </button>
 

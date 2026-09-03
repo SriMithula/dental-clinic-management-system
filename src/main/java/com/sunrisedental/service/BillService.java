@@ -1,5 +1,7 @@
 package com.sunrisedental.service;
 
+import java.util.List;
+
 import com.sunrisedental.dao.InvoiceDao;
 import com.sunrisedental.dao.impl.InvoiceDaoImpl;
 import com.sunrisedental.dto.PatientBill;
@@ -14,5 +16,9 @@ public class BillService {
 
     public PatientBill getBillByAppointmentId(int appointmentId) {
         return invoiceDao.getInvoiceByAppointmentId(appointmentId);
+    }
+
+    public List<PatientBill> getAllBills() {
+        return invoiceDao.getAllBills();
     }
 }

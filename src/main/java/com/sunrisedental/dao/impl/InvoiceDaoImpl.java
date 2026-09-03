@@ -5,6 +5,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.sunrisedental.dao.InvoiceDao;
 import com.sunrisedental.dto.PatientBill;
@@ -109,6 +111,67 @@ public class InvoiceDaoImpl implements InvoiceDao{
 			    }
 
 			    return null;
+	}
+	
+	@Override
+	public List<PatientBill> getAllBills() {
+
+		List<PatientBill> bills = new ArrayList<>();
+
+		String sql = """
+				SELECT
+				    i.id AS invoice_id,
+				    i.total_amount,
+				    a.id AS appointment_id,
+				    a.appointment_no,
+				    p.name AS patient_name,
+				    t.name AS treatment_name,
+				    i.treatment_cost,
+				    i.consultation_fee
+				FROM invoice i
+				INNER JOIN appointments a
+				    ON a.id = i.appointments_id
+				INNER JOIN patients p
+				    ON p.id = a.patients_id
+				INNER JOIN treatments t
+				    ON t.id = a.treatments_id
+				WHERE i.status = 1
+				ORDER BY i.id DESC
+				""";
+
+		try {
+
+			Connection connection =
+					DatabaseConnectionManager.getInstance().getConnection();
+
+			PreparedStatement ps = connection.prepareStatement(sql);
+
+			try (ResultSet rs = ps.executeQuery()) {
+
+				while (rs.next()) {
+
+					PatientBill bill = new PatientBill(
+							rs.getString("appointment_no"),
+							rs.getString("patient_name"),
+							rs.getString("treatment_name"),
+							rs.getDouble("treatment_cost"),
+							rs.getDouble("consultation_fee")
+					);
+
+					bill.setInvoiceId(String.valueOf(rs.getInt("invoice_id")));
+					bill.setTotalAmount(rs.getDouble("total_amount"));
+					bill.setAppointmentId(rs.getInt("appointment_id"));
+
+					bills.add(bill);
+				}
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new RuntimeException("Failed to load bills", e);
+		}
+
+		return bills;
 	}
 
 }

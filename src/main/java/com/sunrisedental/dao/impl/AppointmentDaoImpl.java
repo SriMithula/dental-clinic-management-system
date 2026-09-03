@@ -204,8 +204,12 @@ public class AppointmentDaoImpl implements AppointmentDao {
 			            a.appointment_no,
 			            a.appointment_date,
 			            a.appointment_time,
+			            a.patients_id,
+				     	a.dentists_id,
+				     	a.treatments_id,
 			            p.name AS patient_name,
 			            p.contact_number as contact_no,
+			            p.address AS patient_address,
 			            d.name AS dentist_name,
 			            t.name AS treatment_name,
 			            a.isFinalized as isFinalized,
@@ -234,8 +238,12 @@ public class AppointmentDaoImpl implements AppointmentDao {
 			            dto.setAppointmentNo(rs.getString("appointment_no"));
 			            dto.setAppointmentDate(rs.getDate("appointment_date"));
 			            dto.setAppointmentTime(rs.getTime("appointment_time"));
+			            dto.setPatientId(rs.getInt("patients_id"));
+			            dto.setDentistId(rs.getInt("dentists_id"));
+			            dto.setTreatmentId(rs.getInt("treatments_id"));
 			            dto.setPatientName(rs.getString("patient_name"));
 			            dto.setContactNo(rs.getString("contact_no"));
+			            dto.setAddress(rs.getString("patient_address"));
 			            dto.setDentistName(rs.getString("dentist_name"));
 			            dto.setTreatmentName(rs.getString("treatment_name"));
 			            dto.setFinalized(rs.getBoolean("isFinalized"));
@@ -251,5 +259,134 @@ public class AppointmentDaoImpl implements AppointmentDao {
 
 			    return null;
 	}
+	@Override
+	public boolean isAppointmentNoExistsExcludingSelf(String appointmentNo, int excludeAppointmentId) {
 
+	    String sql = """
+	            SELECT COUNT(*)
+	            FROM appointments
+	            WHERE appointment_no = ?
+	              AND id != ?
+	            """;
+
+	    try {
+
+	    	Connection connection = DatabaseConnectionManager.getInstance().getConnection();
+	    	PreparedStatement ps = connection.prepareStatement(sql);
+
+	        ps.setString(1, appointmentNo);
+	        ps.setInt(2, excludeAppointmentId);
+
+	        try (ResultSet rs = ps.executeQuery()) {
+
+	            if (rs.next()) {
+	                return rs.getInt(1) > 0;
+	            }
+	        }
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        throw new RuntimeException("Failed to validate appointment number", e);
+	    }
+
+	    return false;
+	}
+
+	@Override
+	public boolean isAppointmentExistsExcludingSelf(AppointmentDealer dealer, int excludeAppointmentId) {
+
+	    String sql = """
+	            SELECT COUNT(*)
+	            FROM appointments
+	            WHERE dentists_id = ?
+	              AND appointment_date = ?
+	              AND appointment_time = ?
+	              AND id != ?
+	            """;
+
+	    try {
+
+	    	Connection connection = DatabaseConnectionManager.getInstance().getConnection();
+	    	PreparedStatement ps = connection.prepareStatement(sql);
+
+	        ps.setInt(1, dealer.getDentistId());
+	        ps.setDate(2, dealer.getAppointmentDate());
+	        ps.setTime(3, dealer.getAppointmentTime());
+	        ps.setInt(4, excludeAppointmentId);
+
+	        try (ResultSet rs = ps.executeQuery()) {
+
+	            if (rs.next()) {
+	                return rs.getInt(1) > 0;
+	            }
+	        }
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        throw new RuntimeException("Failed to validate appointment", e);
+	    }
+
+	    return false;
+	}
+	@Override
+	public void updateAppointment(AppointmentDealer dealer) {
+
+	    String sql = """
+	            UPDATE appointments
+	            SET appointment_no = ?,
+	                appointment_date = ?,
+	                appointment_time = ?,
+	                dentists_id = ?,
+	                treatments_id = ?
+	            WHERE id = ?
+	              AND isFinalized = 0
+	            """;
+
+	    try {
+
+	    	Connection connection = DatabaseConnectionManager.getInstance().getConnection();
+	    	PreparedStatement ps = connection.prepareStatement(sql);
+
+	        ps.setString(1, dealer.getAppointmentNo());
+	        ps.setDate(2, dealer.getAppointmentDate());
+	        ps.setTime(3, dealer.getAppointmentTime());
+	        ps.setInt(4, dealer.getDentistId());
+	        ps.setInt(5, dealer.getTreatmentId());
+	        ps.setInt(6, dealer.getId());
+
+	        ps.executeUpdate();
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        throw new RuntimeException("Failed to update appointment", e);
+	    }
+	}
+
+	@Override
+	public boolean deleteAppointment(int appointmentId) {
+
+	    String sql = """
+	            UPDATE appointments
+	            SET status = 0
+	            WHERE id = ?
+	              AND isFinalized = 0
+	            """;
+
+	    try {
+
+	    	Connection connection = DatabaseConnectionManager.getInstance().getConnection();
+	    	PreparedStatement ps = connection.prepareStatement(sql);
+
+	        ps.setInt(1, appointmentId);
+
+	        int rows = ps.executeUpdate();
+
+	        return rows > 0;
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        throw new RuntimeException("Failed to delete appointment", e);
+	    }
+	}
+	
 }

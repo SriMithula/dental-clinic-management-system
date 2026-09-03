@@ -87,10 +87,26 @@
             <button type="button" onclick="window.print()" class="btn btn-success">
                 <i class="bi bi-printer"></i> Print Bill
             </button>
-            <a href="<%= request.getContextPath() %>/dashboard"
-   				class="btn btn-secondary">
-   				 Back
-				</a>
+			 <%
+			String source = request.getParameter("source");
+			
+			if ("billing".equals(source)) {
+			%>
+			    <a href="<%= request.getContextPath() %>/bill"
+			       class="btn btn-secondary">
+			        Back
+			    </a>
+			<%
+			} else {
+			%>
+			    <a href="<%= request.getContextPath() %>/appointmentDetails"
+			       class="btn btn-secondary">
+			        Back
+			    </a>
+			<%
+			}
+			%>
+			
         </div>
     </div>
 </div>
@@ -98,6 +114,16 @@
 <script>
     // Set current date
     document.getElementById("billDate").innerText = new Date().toLocaleDateString();
+
+    // If opened via the Print button, jump straight into the print
+    // dialog once everything (styles included) has finished loading.
+    var shouldPrint = <%= "true".equals(request.getParameter("print")) %>;
+
+    if (shouldPrint) {
+        window.addEventListener("load", function () {
+            window.print();
+        });
+    }
 </script>
 
 </body>

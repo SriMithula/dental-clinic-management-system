@@ -534,7 +534,7 @@
                                     <!-- VIEW BILL -->
 
                                     <a
-                                        href="<%= request.getContextPath() %>/bill?action=VIEW&appointmentId=<%= bill.getAppointmentId() %>"
+                                        href="<%= request.getContextPath() %>/generateBill?appointmentId=<%= bill.getAppointmentId() %>&source=billing"
                                         class="btn btn-sm btn-outline-primary"
                                         title="View Bill">
 
@@ -546,7 +546,7 @@
                                     <!-- PRINT -->
 
                                     <a
-                                        href="<%= request.getContextPath() %>/bill?action=PRINT&appointmentId=<%= bill.getAppointmentId() %>"
+                                        href="<%= request.getContextPath() %>/generateBill?appointmentId=<%= bill.getAppointmentId() %>&print=true&source=billing"
                                         class="btn btn-sm btn-outline-secondary"
                                         title="Print Bill">
 

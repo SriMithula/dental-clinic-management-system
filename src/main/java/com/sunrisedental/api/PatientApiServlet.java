@@ -63,9 +63,9 @@ public class PatientApiServlet extends HttpServlet {
             return;
         }
 
-        if (patientDao.isPatientNameExists(name)) {
+        if (patientDao.isDuplicatePatient(name, contactNo)) {
             ApiUtil.writeError(response, HttpServletResponse.SC_CONFLICT,
-                    "A patient with this name already exists.");
+                    "A patient with this name and contact number already exists.");
             return;
         }
 

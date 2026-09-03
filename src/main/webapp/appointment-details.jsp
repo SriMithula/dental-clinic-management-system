@@ -24,6 +24,11 @@
     List<AppointmentDto> appointments =
         (List<AppointmentDto>)
         request.getAttribute("appointments");
+    
+ 		// Success/error come back as query params after an EDIT/DELETE
+    	// redirect from AppointmentController.
+    	String success = request.getParameter("success");
+    	String error = request.getParameter("error");
 
 %>
 
@@ -226,6 +231,28 @@
         =========================== -->
 
         <div class="p-4">
+        
+        	<% if ("updated".equals(success) || "deleted".equals(success) || "true".equals(success)) { %>
+
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="bi bi-check-circle"></i>
+                    <%= "deleted".equals(success)
+                            ? "Appointment deleted successfully."
+                            : "Appointment updated successfully." %>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+
+            <% } %>
+
+            <% if (error != null && !error.trim().isEmpty()) { %>
+
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="bi bi-exclamation-circle"></i>
+                    <%= error %>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+
+            <% } %>
 
             <div class="appointment-table-wrapper">
 
@@ -419,13 +446,36 @@
 								<% if (!isFinalized) { %>
 								
 								    <!-- FINALIZE -->
-								    <a
-								        href="<%= request.getContextPath() %>/appointment?action=FINALIZE&id=<%= appointment.getId() %>"
+								    
+								        <a href="<%= request.getContextPath() %>/appointment?action=FINALIZE&id=<%= appointment.getId() %>"
 								        class="btn btn-sm btn-outline-success"
 								        title="Finalize Appointment"
 								        onclick="return confirm('Are you sure you want to finalize this appointment?');">
 								
 								        <i class="bi bi-clipboard2-check"></i>
+								
+								    </a>
+								
+								
+								    <!-- EDIT -->
+								    
+								        <a href="<%= request.getContextPath() %>/appointment?action=EDIT&id=<%= appointment.getId() %>"
+								        class="btn btn-sm btn-outline-warning"
+								        title="Edit Appointment">
+								
+								        <i class="bi bi-pencil"></i>
+								
+								    </a>
+								
+								
+								    <!-- DELETE -->
+								    
+								        <a href="<%= request.getContextPath() %>/appointment?action=DELETE&id=<%= appointment.getId() %>"
+								        class="btn btn-sm btn-outline-danger"
+								        title="Delete Appointment"
+								        onclick="return confirm('Are you sure you want to delete this appointment? This cannot be undone.');">
+								
+								        <i class="bi bi-trash"></i>
 								
 								    </a>
 								
@@ -443,33 +493,6 @@
 								    </button>
 								
 								<% } %>
-                                
-
-
-                                <!-- EDIT -->
-
-                             	<!-- <a
-                                    href="<%= request.getContextPath() %>/appointment?action=EDIT&id=<%= appointment.getId() %>"
-                                    class="btn btn-sm btn-outline-warning"
-                                    title="Edit Appointment">
-
-                                    <i class="bi bi-pencil"></i>
-
-                                </a> -->
-
-
-                                <!-- DELETE -->
-
-                                <!--  <a
-                                    href="<%= request.getContextPath() %>/appointment?action=DELETE&id=<%= appointment.getId() %>"
-                                    class="btn btn-sm btn-outline-danger"
-                                    title="Delete Appointment"
-
-                                    onclick="return confirm('Are you sure you want to delete this appointment?');">
-
-                                    <i class="bi bi-trash"></i>
-
-                                </a> --->
 
 
                             </div>

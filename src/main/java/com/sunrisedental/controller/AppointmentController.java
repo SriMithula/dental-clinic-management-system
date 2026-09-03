@@ -8,8 +8,11 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 import com.sunrisedental.dealer.AppointmentDealer;
+import com.sunrisedental.dto.AppointmentDto;
 import com.sunrisedental.dto.CommonResponse;
 import com.sunrisedental.enums.Action;
 import com.sunrisedental.service.AppointmentService;
@@ -76,6 +79,89 @@ public class AppointmentController extends HttpServlet {
 
             return;
 	    }
+		
+		if (action != null && action.equalsIgnoreCase("EDIT")) {
+
+	        String idParam = request.getParameter("id");
+
+	        if (idParam == null || idParam.isEmpty()) {
+	            response.sendRedirect(request.getContextPath() + "/appointmentDetails");
+	            return;
+	        }
+
+	        try {
+
+	            int appointmentId = Integer.parseInt(idParam);
+
+	            CommonResponse cr = appointmentService.getAppointmentById(appointmentId);
+
+	            if (!cr.status) {
+	                response.sendRedirect(
+	                        request.getContextPath()
+	                                + "/appointmentDetails?error="
+	                                + URLEncoder.encode(cr.error, StandardCharsets.UTF_8)
+	                );
+	                return;
+	            }
+
+	            AppointmentDto appointment = (AppointmentDto) cr.extra;
+
+	            if (appointment.isFinalized()) {
+	                response.sendRedirect(
+	                        request.getContextPath()
+	                                + "/appointmentDetails?error="
+	                                + URLEncoder.encode(
+	                                        "This appointment has already been billed and can no longer be edited.",
+	                                        StandardCharsets.UTF_8)
+	                );
+	                return;
+	            }
+
+	            request.setAttribute("editAppointment", appointment);
+	            request.setAttribute("dentists", appointmentService.getDentists());
+	            request.setAttribute("treatments", appointmentService.getTreatments());
+
+	            request.getRequestDispatcher("/appointment.jsp")
+	                .forward(request, response);
+
+	        } catch (NumberFormatException e) {
+	            response.sendRedirect(request.getContextPath() + "/appointmentDetails");
+	        }
+
+	        return;
+	    }
+
+	    if (action != null && action.equalsIgnoreCase("DELETE")) {
+
+	        String idParam = request.getParameter("id");
+
+	        if (idParam == null || idParam.isEmpty()) {
+	            response.sendRedirect(request.getContextPath() + "/appointmentDetails");
+	            return;
+	        }
+
+	        try {
+
+	            int appointmentId = Integer.parseInt(idParam);
+
+	            CommonResponse cr = appointmentService.deleteAppointment(appointmentId);
+
+	            if (cr.status) {
+	                response.sendRedirect(request.getContextPath() + "/appointmentDetails?success=deleted");
+	            } else {
+	                response.sendRedirect(
+	                        request.getContextPath()
+	                                + "/appointmentDetails?error="
+	                                + URLEncoder.encode(cr.error, StandardCharsets.UTF_8)
+	                );
+	            }
+
+	        } catch (NumberFormatException e) {
+	            response.sendRedirect(request.getContextPath() + "/appointmentDetails");
+	        }
+
+	        return;
+	    }
 
 	    request.setAttribute("dentists",appointmentService.getDentists());
 	    request.setAttribute("treatments",appointmentService.getTreatments());
@@ -119,8 +205,41 @@ public class AppointmentController extends HttpServlet {
 			    request.getRequestDispatcher("/appointment.jsp")
                 .forward(request, response);
 			}
+			
+		}
+			
+			else if (action.equals(Action.EDIT.toString())) {
+
+			    String idParam = request.getParameter("appointmentId");
+
+			    int appointmentId;
+
+			    try {
+			        appointmentId = Integer.parseInt(idParam);
+			    } catch (Exception e) {
+			        response.sendRedirect(request.getContextPath() + "/appointmentDetails");
+			        return;
+			    }
+
+			    AppointmentDealer dealer = new AppointmentDealer.Builder()
+			            .fillViaReq(request)
+			            .build();
+
+			    dealer.setId(appointmentId);
+
+			    CommonResponse cr = this.appointmentService.updateAppointment(dealer);
+
+			    if (cr.status) {
+			        response.sendRedirect(request.getContextPath() + "/appointmentDetails?success=updated");
+			    } else {
+			        request.setAttribute("error", cr.error);
+			        request.setAttribute("treatments", appointmentService.getTreatments());
+			        request.setAttribute("dentists", appointmentService.getDentists());
+			        request.getRequestDispatcher("/appointment.jsp")
+			            .forward(request, response);
+			    }
+			}
 		}
 		
 	}
 
-}

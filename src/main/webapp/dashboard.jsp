@@ -56,6 +56,11 @@
         <i class="bi bi-receipt"></i>
         Billing
     </a>
+    
+    <a href="<%= request.getContextPath() %>/report">
+    	<i class="bi bi-bar-chart-line"></i>
+    	Report
+	</a>
 
     <a href="<%= request.getContextPath() %>/help.jsp">
     	<i class="bi bi-question-circle"></i>
